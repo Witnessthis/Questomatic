@@ -27,9 +27,10 @@ function Questomatic_Quest_engine()
 	end
 
 	local numAvailableGossipQuests = GetNumGossipQuests(GetGossipAvailableQuests())
+	print("numAvailableGossipQuests "..numAvailableGossipQuests)
 	if(numAvailableGossipQuests > 0) then
 		for i=1, numAvailableGossipQuests, 1 do
-			SelectGossipActiveQuest(i)
+			SelectGossipAvailableQuest(i)
 			AcceptQuest()
 		end
 	else
