@@ -5,4 +5,4 @@
 ## Author: Witnessthis
 ## SavedVariablesPerCharacter: Questomatic_meta
 ## SavedVariables:
-questomatic.xml
+questomatic.lua
