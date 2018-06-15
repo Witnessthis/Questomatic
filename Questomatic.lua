@@ -8,8 +8,26 @@ function isQuestCompleted(questname)
 		end
 		i = i + 1
 	end
-	print({msg="Quest "..questname.." not tracked.", debug=debug_enabled})
+	print({msg="isQuestCompleted: Quest "..questname.." not tracked.", debug=debug_enabled})
 	return
+end
+
+function GetQuestStatus(questname)
+	local i = 1
+	while GetQuestLogTitle(i) do
+		local questTitle, level, questTag, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(i)
+		if(questTitle == questname) then
+			return true, isComplete
+		end
+		i = i + 1
+	end
+	print({msg="GetQuestStatus: Quest "..questname.." not tracked.", debug=debug_enabled})
+	return false, nil
+end
+
+function GetGossipQuestName(gossip_index, ...)
+	print({msg="GetGossipQuestName: arg"..gossip_index.." "..tostring(arg[(gossip_index-1)*2+1]), debug=debug_enabled})
+	return arg[(gossip_index-1)*2+1] -- imitate zero indexing
 end
 
 function GetNumGossipQuests(...)
@@ -31,9 +49,9 @@ function PrintReturns(...)
 	if(arg.n == 0) then
 		return
 	end
-	print({msg="length "..arg.n, debug=debug_enabled})
+	print({msg="PrintReturns: length "..arg.n, debug=debug_enabled})
 	for i=1, arg.n, 1 do
-		print({msg="arg"..i.." "..tostring(arg[i]), debug=debug_enabled})
+		print({msg="PrintReturns: arg"..i.." "..tostring(arg[i]), debug=debug_enabled})
 	end
 end
 
@@ -46,17 +64,20 @@ end
 
 function TurnInActiveGossipQuests()
 	local numActiveGossipQuests = GetNumGossipQuests(GetGossipActiveQuests())
-	print({msg="numActiveGossipQuests "..numActiveGossipQuests, debug=debug_enabled})
+	print({msg="TurnInActiveGossipQuests: numActiveGossipQuests "..numActiveGossipQuests, debug=debug_enabled})
 	for i=1, numActiveGossipQuests, 1 do
-		SelectGossipActiveQuest(i)
-		CompleteQuest()
-		GetQuestReward(QuestFrameRewardPanel.itemChoice)
+		isTracked, _ = GetQuestStatus(GetGossipQuestName(i, GetGossipActiveQuests()))
+		if (isTracked) then
+			SelectGossipActiveQuest(i)
+			CompleteQuest()
+			GetQuestReward(QuestFrameRewardPanel.itemChoice)
+		end
 	end
 end
 
 function AcceptAvailableGossipQuests()
 	local numAvailableGossipQuests = GetNumGossipQuests(GetGossipAvailableQuests())
-	print({msg="numAvailableGossipQuests "..numAvailableGossipQuests, debug=debug_enabled})
+	print({msg="AcceptAvailableGossipQuests: numAvailableGossipQuests "..numAvailableGossipQuests, debug=debug_enabled})
 	for i=1, numAvailableGossipQuests, 1 do
 		SelectGossipAvailableQuest(i)
 		AcceptQuest()
@@ -65,10 +86,10 @@ end
 
 function TurnInActiveQuests()
 	local numActiveQuests = GetNumActiveQuests()
-	print({msg="numActiveQuests "..numActiveQuests, debug=debug_enabled})
+	print({msg="TurnInActiveQuests: numActiveQuests "..numActiveQuests, debug=debug_enabled})
 	for i=1, numActiveQuests, 1 do
 		is_comlete = isQuestCompleted(GetActiveTitle(i))
-		print({msg="is_comlete "..tostring(is_comlete), debug=debug_enabled})
+		print({msg="TurnInActiveQuests: is_comlete "..tostring(is_comlete), debug=debug_enabled})
 		if (is_comlete) then
 			SelectActiveQuest(i)
 		end
@@ -77,16 +98,11 @@ end
 
 function AcceptAvailableQuests()
 	local numAvailableQuests = GetNumAvailableQuests()
-	print({msg="numAvailableQuests "..numAvailableQuests, debug=debug_enabled})
+	print({msg="AcceptAvailableQuests: numAvailableQuests "..numAvailableQuests, debug=debug_enabled})
 	for i=1, numAvailableQuests, 1 do
 		SelectAvailableQuest(i)
 	end
 end
-
-QUEST_BLACKLIST = {"[19+] Battle of Warsong Gulch",
-					"[?] Past Victories in Arathi",
-					"[?] Past Victories in Warsong Gulch",
-					"[?] Past efforts in Warsong Gulch"}
 
 debug_enabled = false
 
@@ -95,6 +111,11 @@ SLASH_QM2 = "/questomatic"
 SlashCmdList["QM"] = function(msg)
 	if (msg == "-d") then
 		debug_enabled = not debug_enabled
+		if (debug_enabled) then
+			print({msg="/qm -d Debug enabled", debug=true})
+		else
+			print({msg="/qm -d Debug disabled", debug=true})
+		end
 	else
 		print({msg="/qm [-d]", debug=true})
 		print({msg="-d Turn debug printing on/off", debug=true})
@@ -110,36 +131,34 @@ frame:RegisterEvent("QUEST_GREETING")
 frame:RegisterEvent("QUEST_DETAIL")
 
 local function eventHandler(...)
-	if(AreQuestsBlacklisted(GetGossipActiveQuests()) ~= true) then
-		if (event == "PLAYER_LOGIN") then
-			print({msg="Questomatic loaded. /qm", debug=true})
+	if (event == "PLAYER_LOGIN") then
+		print({msg="Questomatic loaded. /qm", debug=true})
 
-		elseif	(event == "QUEST_PROGRESS") then
-			print({msg="Got "..event.." event", debug=debug_enabled})
-			CompleteQuest();
+	elseif	(event == "QUEST_PROGRESS") then
+		print({msg="Got "..event.." event", debug=debug_enabled})
+		CompleteQuest();
 
-		elseif	(event == "QUEST_COMPLETE") then
-			print({msg="Got "..event.." event", debug=debug_enabled})
-			numQuestChoices = GetNumQuestChoices()
-			print({msg="numQuestChoices "..tostring(numQuestChoices), debug=debug_enabled})
-			if (numQuestChoices == 0) then
-				GetQuestReward()
-			end
-
-		elseif	(event == "GOSSIP_SHOW") then
-			print({msg="Got "..event.." event", debug=debug_enabled})
-			TurnInActiveGossipQuests()
-			AcceptAvailableGossipQuests()
-
-		elseif	(event == "QUEST_DETAIL") then
-			print({msg="Got "..event.." event", debug=debug_enabled})
-			AcceptQuest()
-
-		elseif	(event == "QUEST_GREETING") then
-			print({msg="Got "..event.." event", debug=debug_enabled})
-			TurnInActiveQuests(numActiveQuests)
-			AcceptAvailableQuests(numAvailableQuests)
+	elseif	(event == "QUEST_COMPLETE") then
+		print({msg="Got "..event.." event", debug=debug_enabled})
+		numQuestChoices = GetNumQuestChoices()
+		print({msg="numQuestChoices "..tostring(numQuestChoices), debug=debug_enabled})
+		if (numQuestChoices == 0) then
+			GetQuestReward()
 		end
+
+	elseif	(event == "GOSSIP_SHOW") then
+		print({msg="Got "..event.." event", debug=debug_enabled})
+		TurnInActiveGossipQuests()
+		AcceptAvailableGossipQuests()
+
+	elseif	(event == "QUEST_DETAIL") then
+		print({msg="Got "..event.." event", debug=debug_enabled})
+		AcceptQuest()
+
+	elseif	(event == "QUEST_GREETING") then
+		print({msg="Got "..event.." event", debug=debug_enabled})
+		TurnInActiveQuests(numActiveQuests)
+		AcceptAvailableQuests(numAvailableQuests)
 	end
 end
 
