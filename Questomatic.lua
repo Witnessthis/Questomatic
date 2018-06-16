@@ -1,17 +1,4 @@
 
-function isQuestCompleted(questname)
-	local i = 1
-	while GetQuestLogTitle(i) do
-		local questTitle, level, questTag, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(i)
-		if(questTitle == questname) then
-			return isComplete
-		end
-		i = i + 1
-	end
-	print({msg="isQuestCompleted: Quest "..questname.." not tracked.", debug=debug_enabled})
-	return
-end
-
 function GetQuestStatus(questname)
 	local i = 1
 	while GetQuestLogTitle(i) do
@@ -21,7 +8,7 @@ function GetQuestStatus(questname)
 		end
 		i = i + 1
 	end
-	print({msg="GetQuestStatus: Quest "..questname.." not tracked.", debug=debug_enabled})
+	print({msg="GetQuestStatus: Quest "..tostring(questname).." not tracked.", debug=debug_enabled})
 	return false, nil
 end
 
@@ -46,12 +33,12 @@ end
 
 -- Mainly used for debugging purposes
 function PrintReturns(...)
+	print({msg="PrintReturns: length "..tostring(arg.n), debug=debug_enabled})
 	if(arg.n == 0) then
 		return
 	end
-	print({msg="PrintReturns: length "..arg.n, debug=debug_enabled})
 	for i=1, arg.n, 1 do
-		print({msg="PrintReturns: arg"..i.." "..tostring(arg[i]), debug=debug_enabled})
+		print({msg="PrintReturns: arg"..tostring(i).." "..tostring(arg[i]), debug=debug_enabled})
 	end
 end
 
@@ -62,9 +49,13 @@ function print(t)
 	end
 end
 
+function dbgprint(msg)
+	DEFAULT_CHAT_FRAME:AddMessage(msg)
+end
+
 function TurnInActiveGossipQuests()
 	local numActiveGossipQuests = GetNumGossipQuests(GetGossipActiveQuests())
-	print({msg="TurnInActiveGossipQuests: numActiveGossipQuests "..numActiveGossipQuests, debug=debug_enabled})
+	print({msg="TurnInActiveGossipQuests: numActiveGossipQuests "..tostring(numActiveGossipQuests), debug=debug_enabled})
 	for i=1, numActiveGossipQuests, 1 do
 		isTracked, _ = GetQuestStatus(GetGossipQuestName(i, GetGossipActiveQuests()))
 		if (isTracked) then
@@ -77,7 +68,7 @@ end
 
 function AcceptAvailableGossipQuests()
 	local numAvailableGossipQuests = GetNumGossipQuests(GetGossipAvailableQuests())
-	print({msg="AcceptAvailableGossipQuests: numAvailableGossipQuests "..numAvailableGossipQuests, debug=debug_enabled})
+	print({msg="AcceptAvailableGossipQuests: numAvailableGossipQuests "..tostring(numAvailableGossipQuests), debug=debug_enabled})
 	for i=1, numAvailableGossipQuests, 1 do
 		SelectGossipAvailableQuest(i)
 		AcceptQuest()
@@ -88,7 +79,7 @@ function TurnInActiveQuests()
 	local numActiveQuests = GetNumActiveQuests()
 	print({msg="TurnInActiveQuests: numActiveQuests "..numActiveQuests, debug=debug_enabled})
 	for i=1, numActiveQuests, 1 do
-		is_comlete = isQuestCompleted(GetActiveTitle(i))
+		_, is_comlete = GetQuestStatus(GetActiveTitle(i))
 		print({msg="TurnInActiveQuests: is_comlete "..tostring(is_comlete), debug=debug_enabled})
 		if (is_comlete) then
 			SelectActiveQuest(i)
@@ -136,18 +127,25 @@ local function eventHandler(...)
 
 	elseif	(event == "QUEST_PROGRESS") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
-		CompleteQuest();
+		isTracked, _ = GetQuestStatus(GetTitleText())
+		if (isTracked) then
+			CompleteQuest();
+		end
 
 	elseif	(event == "QUEST_COMPLETE") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
-		numQuestChoices = GetNumQuestChoices()
-		print({msg="numQuestChoices "..tostring(numQuestChoices), debug=debug_enabled})
-		if (numQuestChoices == 0) then
-			GetQuestReward()
+		isTracked, _ = GetQuestStatus(GetTitleText())
+		if (isTracked) then
+			numQuestChoices = GetNumQuestChoices()
+			print({msg="numQuestChoices "..tostring(numQuestChoices), debug=debug_enabled})
+			if (numQuestChoices == 0) then
+				GetQuestReward()
+			end
 		end
 
 	elseif	(event == "GOSSIP_SHOW") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
+
 		TurnInActiveGossipQuests()
 		AcceptAvailableGossipQuests()
 
