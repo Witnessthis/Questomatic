@@ -74,7 +74,7 @@ function TurnInActiveQuests()
 		QuestLogName, _ = gsub(GetActiveTitle(i), "^%[[%d%?%+]+%]% ", "")
 		isTracked, isComleted = GetQuestStatus(QuestLogName)
 		print({msg="TurnInActiveQuests: isComleted "..tostring(isComleted), debug=debug_enabled})
-		if (isTracked or isComleted) then
+		if ((isTracked and isComleted) or isComleted) then
 			SelectActiveQuest(i)
 		end
 	end
@@ -121,8 +121,8 @@ local function eventHandler(...)
 	elseif	(event == "QUEST_PROGRESS") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
 		QuestLogName, _ = gsub(GetTitleText(), "^%[[%d%?%+]+%]% ", "")
-		isTracked, _ = GetQuestStatus(QuestLogName)
-		if (isTracked) then
+		isTracked, isCompleted = GetQuestStatus(QuestLogName)
+		if (isTracked and isCompleted) then
 			CompleteQuest();
 		end
 
