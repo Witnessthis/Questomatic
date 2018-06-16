@@ -231,6 +231,7 @@ SlashCmdList["QM"] = function(msg)
 	if (msg == "-h") then
 		print({msg="|cfffc9b14/qm [-d]|r", debug=true})
 		print({msg="|cfffc9b14/qm toggle Questomatic on/off|r", debug=true})
+		print({msg="|cfffc9b14/qm -h Prints Questomatic CLI overview.|r", debug=true})
 		print({msg="|cfffc9b14/qm -d Turn debug printing on/off|r", debug=true})
 	elseif (msg == "-d") then
 		debug_enabled = not debug_enabled
