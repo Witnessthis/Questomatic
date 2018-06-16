@@ -1,8 +1,10 @@
 
 function GetQuestStatus(questname)
 	local i = 1
+
 	while GetQuestLogTitle(i) do
 		local questTitle, level, questTag, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(i)
+		print({msg="GetQuestStatus: Got:  '"..tostring(questTitle).."'  Expected: '"..tostring(questname).."'", debug=debug_enabled})
 		if(questTitle == questname) then
 			return true, isComplete
 		end
@@ -47,7 +49,8 @@ function TurnInActiveGossipQuests()
 	local numActiveGossipQuests = GetNumGossipQuests(GetGossipActiveQuests())
 	print({msg="TurnInActiveGossipQuests: numActiveGossipQuests "..tostring(numActiveGossipQuests), debug=debug_enabled})
 	for i=1, numActiveGossipQuests, 1 do
-		isTracked, _ = GetQuestStatus(GetGossipQuestName(i, GetGossipActiveQuests()))
+		QuestLogName, _ = gsub(GetGossipQuestName(i, GetGossipActiveQuests()), "^%[[%d%?]+%]% ", "")
+		isTracked, _ = GetQuestStatus(QuestLogName)
 		if (isTracked) then
 			SelectGossipActiveQuest(i)
 			CompleteQuest()
@@ -117,14 +120,16 @@ local function eventHandler(...)
 
 	elseif	(event == "QUEST_PROGRESS") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
-		isTracked, _ = GetQuestStatus(GetTitleText())
+		QuestLogName, _ = gsub(GetTitleText(), "^%[[%d%?]+%]% ", "")
+		isTracked, _ = GetQuestStatus(QuestLogName)
 		if (isTracked) then
 			CompleteQuest();
 		end
 
 	elseif	(event == "QUEST_COMPLETE") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
-		isTracked, _ = GetQuestStatus(GetTitleText())
+		QuestLogName, _ = gsub(GetTitleText(), "^%[[%d%?]+%]% ", "")
+		isTracked, _ = GetQuestStatus(QuestLogName)
 		if (isTracked) then
 			numQuestChoices = GetNumQuestChoices()
 			print({msg="numQuestChoices "..tostring(numQuestChoices), debug=debug_enabled})
