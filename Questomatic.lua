@@ -6,11 +6,37 @@
 --
 -----------------------------------------------------------
 
+-----------------------------------------------------------
+-- Default variable assignments
+-----------------------------------------------------------
+debug_enabled = false
+events_on = true
+
+
+-----------------------------------------------------------
+-- WoW environment functions
+-----------------------------------------------------------
+function ListAddons()
+	numAddons = GetNumAddOns()
+	for i=1, numAddons, 1 do
+		name, title, notes, enabled, loadable, reason, security = GetAddOnInfo(i)
+		print({msg="ListAddons: GetAddOnInfo "..tostring(name), debug=debug_enabled})
+	end
+	PrintReturns(GetAddOnInfo("Questomatic"))
+end
+
+function DisableQuestomatic(frame)
+	UnregisterEvents(frame)
+end
+
+function EnableQuestomatic(frame)
+	RegisterEvents(frame)
+end
+
 
 -----------------------------------------------------------
 -- Print functions
 -----------------------------------------------------------
-
 -- Mainly used for debugging purposes
 function PrintReturns(...)
 	print({msg="PrintReturns: length "..tostring(arg.n), debug=debug_enabled})
@@ -33,10 +59,10 @@ function dbgprint(msg)
 	DEFAULT_CHAT_FRAME:AddMessage(msg)
 end
 
+
 -----------------------------------------------------------
 -- Quest info functions
 -----------------------------------------------------------
-
 function GetQuestStatus(questname)
 	local i = 1
 	while GetQuestLogTitle(i) do
@@ -64,7 +90,6 @@ end
 -----------------------------------------------------------
 -- Turn in and accept quest functions
 -----------------------------------------------------------
-
 function TurnInActiveGossipQuests()
 	local numActiveGossipQuests = GetNumGossipQuests(GetGossipActiveQuests())
 	print({msg="TurnInActiveGossipQuests: numActiveGossipQuests "..tostring(numActiveGossipQuests), debug=debug_enabled})
@@ -109,50 +134,38 @@ function AcceptAvailableQuests()
 	end
 end
 
------------------------------------------------------------
--- Default variable assignments
------------------------------------------------------------
-debug_enabled = false
-
-
-
------------------------------------------------------------
--- Slash command handler
------------------------------------------------------------
-SLASH_QM1 = "/qm"
-SLASH_QM2 = "/questomatic"
-SlashCmdList["QM"] = function(msg)
-	if (msg == "-d") then
-		debug_enabled = not debug_enabled
-		if (debug_enabled) then
-			print({msg="|cfffc9b14/qm -d Debug enabled|r", debug=true})
-		else
-			print({msg="|cfffc9b14/qm -d Debug disabled|r", debug=true})
-		end
-	else
-		print({msg="|cfffc9b14/qm [-d]|r", debug=true})
-		print({msg="|cfffc9b14-d Turn debug printing on/off|r", debug=true})
-	end
-end
-
 
 -----------------------------------------------------------
 -- Register Events
 -----------------------------------------------------------
+function RegisterEvents(frame)
+	frame:RegisterEvent("PLAYER_LOGIN")
+	frame:RegisterEvent("QUEST_PROGRESS")
+	frame:RegisterEvent("QUEST_COMPLETE")
+	frame:RegisterEvent("GOSSIP_SHOW")
+	frame:RegisterEvent("QUEST_GREETING")
+	frame:RegisterEvent("QUEST_DETAIL")
+end
+
+function UnregisterEvents(frame)
+	frame:UnregisterEvent("PLAYER_LOGIN")
+	frame:UnregisterEvent("QUEST_PROGRESS")
+	frame:UnregisterEvent("QUEST_COMPLETE")
+	frame:UnregisterEvent("GOSSIP_SHOW")
+	frame:UnregisterEvent("QUEST_GREETING")
+	frame:UnregisterEvent("QUEST_DETAIL")
+end
+
 local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_LOGIN")
-frame:RegisterEvent("QUEST_PROGRESS")
-frame:RegisterEvent("QUEST_COMPLETE")
-frame:RegisterEvent("GOSSIP_SHOW")
-frame:RegisterEvent("QUEST_GREETING")
-frame:RegisterEvent("QUEST_DETAIL")
+RegisterEvents(frame)
+
 
 -----------------------------------------------------------
 -- Event Handler
 -----------------------------------------------------------
 local function eventHandler(...)
 	if (event == "PLAYER_LOGIN") then
-		print({msg="|cfffc8014Q|cfffc8414u|cfffc8814e|cfffc8b14s|cfffc9314t|cfffc9b14o|cfffc9f14m|cfffca314a|cfffcaa14t|cfffcae14i|cfffcb614c |cfffcc214l|cfffcc514o|cfffcc914a|cfffccd14d|cfffcd514e|cfffcdd14d|cfffce414.  |cfffc9b14/qm|r", debug=true})
+		print({msg="|cfffc8014Q|cfffc8414u|cfffc8814e|cfffc8b14s|cfffc9314t|cfffc9b14o|cfffc9f14m|cfffca314a|cfffcaa14t|cfffcae14i|cfffcb614c |cfffcc214l|cfffcc514o|cfffcc914a|cfffccd14d|cfffcd514e|cfffcdd14d|cfffce414.  |cfffc9b14/qm -h for help|r", debug=true})
 
 	elseif	(event == "QUEST_PROGRESS") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
@@ -192,3 +205,32 @@ local function eventHandler(...)
 end
 
 frame:SetScript("OnEvent", eventHandler)
+
+
+-----------------------------------------------------------
+-- Slash command handler
+-----------------------------------------------------------
+SLASH_QM1 = "/qm"
+SLASH_QM2 = "/questomatic"
+SlashCmdList["QM"] = function(msg)
+	if (msg == "-h") then
+		print({msg="|cfffc9b14/qm [-d]|r", debug=true})
+		print({msg="|cfffc9b14/qm toggle Questomatic on/off|r", debug=true})
+		print({msg="|cfffc9b14/qm -d Turn debug printing on/off|r", debug=true})
+	elseif (msg == "-d") then
+		debug_enabled = not debug_enabled
+		if (debug_enabled) then
+			print({msg="|cfffc9b14/qm -d Debug enabled|r", debug=true})
+		else
+			print({msg="|cfffc9b14/qm -d Debug disabled|r", debug=true})
+		end
+	else
+		if (events_on) then
+			print({msg="|cfffc9b14Questomatic off|r", debug=true})
+			DisableQuestomatic(frame)
+		else
+			print({msg="|cfffc9b14Questomatic on|r", debug=true})
+			EnableQuestomatic(frame)
+		end
+	end
+end
