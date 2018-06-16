@@ -1,6 +1,6 @@
 ﻿## Interface: 11200
 ## Title: Questomatic
-## Version: 0.2
+## Version: 0.3
 ## Notes: Automatically accept and turn in quests.
 ## Author: Witnessthis
 ## SavedVariablesPerCharacter: Questomatic_meta
