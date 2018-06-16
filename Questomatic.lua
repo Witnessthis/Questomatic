@@ -109,7 +109,12 @@ function AcceptAvailableGossipQuests()
 	print({msg="AcceptAvailableGossipQuests: numAvailableGossipQuests "..tostring(numAvailableGossipQuests), debug=debug_enabled})
 	for i=1, numAvailableGossipQuests, 1 do
 		SelectGossipAvailableQuest(i)
-		AcceptQuest()
+		_, numQuests = GetNumQuestLogEntries();
+		if (numQuests < 20) then
+			AcceptQuest()
+		else
+			print({msg="AcceptAvailableGossipQuests: Quest log full ", debug=debug_enabled})
+		end
 	end
 end
 
