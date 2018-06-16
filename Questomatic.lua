@@ -96,13 +96,13 @@ SlashCmdList["QM"] = function(msg)
 	if (msg == "-d") then
 		debug_enabled = not debug_enabled
 		if (debug_enabled) then
-			print({msg="/qm -d Debug enabled", debug=true})
+			print({msg="|cfffc9b14/qm -d Debug enabled|r", debug=true})
 		else
-			print({msg="/qm -d Debug disabled", debug=true})
+			print({msg="|cfffc9b14/qm -d Debug disabled|r", debug=true})
 		end
 	else
-		print({msg="/qm [-d]", debug=true})
-		print({msg="-d Turn debug printing on/off", debug=true})
+		print({msg="|cfffc9b14/qm [-d]|r", debug=true})
+		print({msg="|cfffc9b14-d Turn debug printing on/off|r", debug=true})
 	end
 end
 
@@ -116,7 +116,7 @@ frame:RegisterEvent("QUEST_DETAIL")
 
 local function eventHandler(...)
 	if (event == "PLAYER_LOGIN") then
-		print({msg="Questomatic loaded. /qm", debug=true})
+		print({msg="|cfffc8014Q|cfffc8414u|cfffc8814e|cfffc8b14s|cfffc9314t|cfffc9b14o|cfffc9f14m|cfffca314a|cfffcaa14t|cfffcae14i|cfffcb614c |cfffcc214l|cfffcc514o|cfffcc914a|cfffccd14d|cfffcd514e|cfffcdd14d|cfffce414.  |cfffc9b14/qm|r", debug=true})
 
 	elseif	(event == "QUEST_PROGRESS") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
