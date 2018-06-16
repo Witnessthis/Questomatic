@@ -21,16 +21,6 @@ function GetNumGossipQuests(...)
 	return arg.n/2
 end
 
-function AreQuestsBlacklisted(...)
-	for i=1, arg.n, 2 do
-		for j=1, getn(QUEST_BLACKLIST), 1 do
-			if(QUEST_BLACKLIST[j] == arg[i]) then
-				return true
-			end
-		end
-	end
-end
-
 -- Mainly used for debugging purposes
 function PrintReturns(...)
 	print({msg="PrintReturns: length "..tostring(arg.n), debug=debug_enabled})
