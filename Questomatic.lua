@@ -129,8 +129,13 @@ end
 function AcceptAvailableQuests()
 	local numAvailableQuests = GetNumAvailableQuests()
 	print({msg="AcceptAvailableQuests: numAvailableQuests "..numAvailableQuests, debug=debug_enabled})
+	_, numQuests = GetNumQuestLogEntries();
 	for i=1, numAvailableQuests, 1 do
-		SelectAvailableQuest(i)
+		if (numQuests < 20) then
+			SelectAvailableQuest(i)
+		else
+			print({msg="AcceptAvailableQuests: Quest log full ", debug=debug_enabled})
+		end
 	end
 end
 
@@ -195,7 +200,12 @@ local function eventHandler(...)
 
 	elseif	(event == "QUEST_DETAIL") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
-		AcceptQuest()
+		_, numQuests = GetNumQuestLogEntries();
+		if (numQuests < 20) then
+			AcceptQuest()
+		else
+			print({msg="eventHandler: Quest log full ", debug=debug_enabled})
+		end
 
 	elseif	(event == "QUEST_GREETING") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
@@ -227,9 +237,11 @@ SlashCmdList["QM"] = function(msg)
 	else
 		if (events_on) then
 			print({msg="|cfffc9b14Questomatic off|r", debug=true})
+			events_on = not events_on
 			DisableQuestomatic(frame)
 		else
 			print({msg="|cfffc9b14Questomatic on|r", debug=true})
+			events_on = not events_on
 			EnableQuestomatic(frame)
 		end
 	end
