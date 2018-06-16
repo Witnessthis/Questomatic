@@ -1,7 +1,6 @@
 
 function GetQuestStatus(questname)
 	local i = 1
-
 	while GetQuestLogTitle(i) do
 		local questTitle, level, questTag, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(i)
 		print({msg="GetQuestStatus: Got:  '"..tostring(questTitle).."'  Expected: '"..tostring(questname).."'", debug=debug_enabled})
@@ -72,9 +71,10 @@ function TurnInActiveQuests()
 	local numActiveQuests = GetNumActiveQuests()
 	print({msg="TurnInActiveQuests: numActiveQuests "..numActiveQuests, debug=debug_enabled})
 	for i=1, numActiveQuests, 1 do
-		_, is_comlete = GetQuestStatus(GetActiveTitle(i))
-		print({msg="TurnInActiveQuests: is_comlete "..tostring(is_comlete), debug=debug_enabled})
-		if (is_comlete) then
+		QuestLogName, _ = gsub(GetActiveTitle(i), "^%[[%d%?%+]+%]% ", "")
+		isTracked, isComleted = GetQuestStatus(QuestLogName)
+		print({msg="TurnInActiveQuests: isComleted "..tostring(isComleted), debug=debug_enabled})
+		if (isTracked or isComleted) then
 			SelectActiveQuest(i)
 		end
 	end
