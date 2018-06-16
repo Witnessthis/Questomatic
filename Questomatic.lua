@@ -49,7 +49,7 @@ function TurnInActiveGossipQuests()
 	local numActiveGossipQuests = GetNumGossipQuests(GetGossipActiveQuests())
 	print({msg="TurnInActiveGossipQuests: numActiveGossipQuests "..tostring(numActiveGossipQuests), debug=debug_enabled})
 	for i=1, numActiveGossipQuests, 1 do
-		QuestLogName, _ = gsub(GetGossipQuestName(i, GetGossipActiveQuests()), "^%[[%d%?]+%]% ", "")
+		QuestLogName, _ = gsub(GetGossipQuestName(i, GetGossipActiveQuests()), "^%[[%d%?%+]+%]% ", "")
 		isTracked, _ = GetQuestStatus(QuestLogName)
 		if (isTracked) then
 			SelectGossipActiveQuest(i)
@@ -120,7 +120,7 @@ local function eventHandler(...)
 
 	elseif	(event == "QUEST_PROGRESS") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
-		QuestLogName, _ = gsub(GetTitleText(), "^%[[%d%?]+%]% ", "")
+		QuestLogName, _ = gsub(GetTitleText(), "^%[[%d%?%+]+%]% ", "")
 		isTracked, _ = GetQuestStatus(QuestLogName)
 		if (isTracked) then
 			CompleteQuest();
@@ -128,7 +128,7 @@ local function eventHandler(...)
 
 	elseif	(event == "QUEST_COMPLETE") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
-		QuestLogName, _ = gsub(GetTitleText(), "^%[[%d%?]+%]% ", "")
+		QuestLogName, _ = gsub(GetTitleText(), "^%[[%d%?%+]+%]% ", "")
 		isTracked, _ = GetQuestStatus(QuestLogName)
 		if (isTracked) then
 			numQuestChoices = GetNumQuestChoices()
