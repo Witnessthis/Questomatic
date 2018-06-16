@@ -1,3 +1,41 @@
+-----------------------------------------------------------
+-- Name: Questomatic
+-- Author: Witnessthis
+-- WoW version: 1.12.1
+-- Description: World of Warcraft Addon to automatically deliver and accept quests.
+--
+-----------------------------------------------------------
+
+
+-----------------------------------------------------------
+-- Print functions
+-----------------------------------------------------------
+
+-- Mainly used for debugging purposes
+function PrintReturns(...)
+	print({msg="PrintReturns: length "..tostring(arg.n), debug=debug_enabled})
+	if(arg.n == 0) then
+		return
+	end
+	for i=1, arg.n, 1 do
+		print({msg="PrintReturns: arg"..tostring(i).." "..tostring(arg[i]), debug=debug_enabled})
+	end
+end
+
+function print(t)
+	setmetatable(t,{__index={msg="test ",debug=false}})
+	if t.debug then
+		DEFAULT_CHAT_FRAME:AddMessage(t.msg)
+	end
+end
+
+function dbgprint(msg)
+	DEFAULT_CHAT_FRAME:AddMessage(msg)
+end
+
+-----------------------------------------------------------
+-- Quest info functions
+-----------------------------------------------------------
 
 function GetQuestStatus(questname)
 	local i = 1
@@ -22,27 +60,10 @@ function GetNumGossipQuests(...)
 	return arg.n/2
 end
 
--- Mainly used for debugging purposes
-function PrintReturns(...)
-	print({msg="PrintReturns: length "..tostring(arg.n), debug=debug_enabled})
-	if(arg.n == 0) then
-		return
-	end
-	for i=1, arg.n, 1 do
-		print({msg="PrintReturns: arg"..tostring(i).." "..tostring(arg[i]), debug=debug_enabled})
-	end
-end
 
-function print(t)
-	setmetatable(t,{__index={msg="test ",debug=false}})
-	if t.debug then
-		DEFAULT_CHAT_FRAME:AddMessage(t.msg)
-	end
-end
-
-function dbgprint(msg)
-	DEFAULT_CHAT_FRAME:AddMessage(msg)
-end
+-----------------------------------------------------------
+-- Turn in and accept quest functions
+-----------------------------------------------------------
 
 function TurnInActiveGossipQuests()
 	local numActiveGossipQuests = GetNumGossipQuests(GetGossipActiveQuests())
@@ -88,8 +109,16 @@ function AcceptAvailableQuests()
 	end
 end
 
+-----------------------------------------------------------
+-- Default variable assignments
+-----------------------------------------------------------
 debug_enabled = false
 
+
+
+-----------------------------------------------------------
+-- Slash command handler
+-----------------------------------------------------------
 SLASH_QM1 = "/qm"
 SLASH_QM2 = "/questomatic"
 SlashCmdList["QM"] = function(msg)
@@ -106,6 +135,10 @@ SlashCmdList["QM"] = function(msg)
 	end
 end
 
+
+-----------------------------------------------------------
+-- Register Events
+-----------------------------------------------------------
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("QUEST_PROGRESS")
@@ -114,6 +147,9 @@ frame:RegisterEvent("GOSSIP_SHOW")
 frame:RegisterEvent("QUEST_GREETING")
 frame:RegisterEvent("QUEST_DETAIL")
 
+-----------------------------------------------------------
+-- Event Handler
+-----------------------------------------------------------
 local function eventHandler(...)
 	if (event == "PLAYER_LOGIN") then
 		print({msg="|cfffc8014Q|cfffc8414u|cfffc8814e|cfffc8b14s|cfffc9314t|cfffc9b14o|cfffc9f14m|cfffca314a|cfffcaa14t|cfffcae14i|cfffcb614c |cfffcc214l|cfffcc514o|cfffcc914a|cfffccd14d|cfffcd514e|cfffcdd14d|cfffce414.  |cfffc9b14/qm|r", debug=true})
