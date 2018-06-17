@@ -11,6 +11,7 @@
 -----------------------------------------------------------
 debug_enabled = false
 events_on = true
+quest_level_preamble_pattern = "^%[[%d%?%+%-]+%]% "
 
 
 -----------------------------------------------------------
@@ -96,7 +97,7 @@ function TurnInActiveGossipQuests()
 	local numActiveGossipQuests = GetNumGossipQuests(GetGossipActiveQuests())
 	print({msg="TurnInActiveGossipQuests: numActiveGossipQuests "..tostring(numActiveGossipQuests), debug=debug_enabled})
 	for i=1, numActiveGossipQuests, 1 do
-		QuestLogName, _ = gsub(GetGossipQuestName(i, GetGossipActiveQuests()), "^%[[%d%?%+]+%]% ", "")
+		QuestLogName, _ = gsub(GetGossipQuestName(i, GetGossipActiveQuests()), quest_level_preamble_pattern, "")
 		isTracked, isComleted = GetQuestStatus(QuestLogName)
 		if ((isTracked and isComleted) or isComleted) then
 			SelectGossipActiveQuest(i)
@@ -124,7 +125,7 @@ function TurnInActiveQuests()
 	local numActiveQuests = GetNumActiveQuests()
 	print({msg="TurnInActiveQuests: numActiveQuests "..numActiveQuests, debug=debug_enabled})
 	for i=1, numActiveQuests, 1 do
-		QuestLogName, _ = gsub(GetActiveTitle(i), "^%[[%d%?%+]+%]% ", "")
+		QuestLogName, _ = gsub(GetActiveTitle(i), quest_level_preamble_pattern, "")
 		isTracked, isComleted = GetQuestStatus(QuestLogName)
 		print({msg="TurnInActiveQuests: isComleted "..tostring(isComleted), debug=debug_enabled})
 		if ((isTracked and isComleted) or isComleted) then
@@ -181,7 +182,7 @@ local function eventHandler(...)
 
 	elseif	(event == "QUEST_PROGRESS") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
-		QuestLogName, _ = gsub(GetTitleText(), "^%[[%d%?%+]+%]% ", "")
+		QuestLogName, _ = gsub(GetTitleText(), quest_level_preamble_pattern, "")
 		isTracked, isCompleted = GetQuestStatus(QuestLogName)
 		if (isTracked and isCompleted) then
 			CompleteQuest();
@@ -189,7 +190,7 @@ local function eventHandler(...)
 
 	elseif	(event == "QUEST_COMPLETE") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
-		QuestLogName, _ = gsub(GetTitleText(), "^%[[%d%?%+]+%]% ", "")
+		QuestLogName, _ = gsub(GetTitleText(), quest_level_preamble_pattern, "")
 		isTracked, _ = GetQuestStatus(QuestLogName)
 		if (isTracked) then
 			numQuestChoices = GetNumQuestChoices()
