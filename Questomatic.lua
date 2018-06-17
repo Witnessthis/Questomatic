@@ -228,17 +228,17 @@ frame:SetScript("OnEvent", eventHandler)
 SLASH_QM1 = "/qm"
 SLASH_QM2 = "/questomatic"
 SlashCmdList["QM"] = function(msg)
-	if (msg == "-h") then
-		print({msg="|cfffc9b14/qm [-d]|r", debug=true})
-		print({msg="|cfffc9b14/qm toggle Questomatic on/off|r", debug=true})
-		print({msg="|cfffc9b14/qm -h Prints Questomatic CLI overview.|r", debug=true})
-		print({msg="|cfffc9b14/qm -d Turn debug printing on/off|r", debug=true})
-	elseif (msg == "-d") then
+	if (msg == "-h" or "--help") then
+		print({msg="|cfffc9b14/qm (-h, --help | -d, --debug)|r", debug=true})
+		print({msg="|cfffc9b14/qm  Toggle Questomatic on/off|r", debug=true})
+		print({msg="|cfffc9b14/qm -h, --help  Prints Questomatic CLI overview.|r", debug=true})
+		print({msg="|cfffc9b14/qm -d, --debug  Turn debug printing on/off|r", debug=true})
+	elseif (msg == "-d" or "--debug") then
 		debug_enabled = not debug_enabled
 		if (debug_enabled) then
-			print({msg="|cfffc9b14/qm -d Debug enabled|r", debug=true})
+			print({msg="|cfffc9b14Questomatic: Debug enabled|r", debug=true})
 		else
-			print({msg="|cfffc9b14/qm -d Debug disabled|r", debug=true})
+			print({msg="|cfffc9b14Questomatic: -d Debug disabled|r", debug=true})
 		end
 	else
 		if (events_on) then
