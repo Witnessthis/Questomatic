@@ -67,14 +67,16 @@ function GetQuestStatus(questname)
 	local i = 1
 	while GetQuestLogTitle(i) do
 		local questTitle, level, questTag, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(i)
-		print({msg="GetQuestStatus: Got:  '"..tostring(questTitle).."'  Expected: '"..tostring(questname).."'", debug=debug_enabled})
-		if(questTitle == questname) then
-			return true, isComplete
+		if (not isHeader) then
+			print({msg="GetQuestStatus: Got:  '"..tostring(questTitle).."'  Expected: '"..tostring(questname).."'", debug=debug_enabled})
+			if(questTitle == questname) then
+				return true, isComplete
+			end
 		end
 		i = i + 1
 	end
-	print({msg="GetQuestStatus: Quest "..tostring(questname).." not tracked.", debug=debug_enabled})
-	return false, nil
+	print({msg="GetQuestStatus: Quest "..tostring(questname).." not tracked. Completed="..tostring(isComplete), debug=debug_enabled})
+	return false, isComplete
 end
 
 function GetGossipQuestName(gossip_index, ...)
@@ -95,8 +97,8 @@ function TurnInActiveGossipQuests()
 	print({msg="TurnInActiveGossipQuests: numActiveGossipQuests "..tostring(numActiveGossipQuests), debug=debug_enabled})
 	for i=1, numActiveGossipQuests, 1 do
 		QuestLogName, _ = gsub(GetGossipQuestName(i, GetGossipActiveQuests()), "^%[[%d%?%+]+%]% ", "")
-		isTracked, _ = GetQuestStatus(QuestLogName)
-		if (isTracked) then
+		isTracked, isComleted = GetQuestStatus(QuestLogName)
+		if ((isTracked and isComleted) or isComleted) then
 			SelectGossipActiveQuest(i)
 			CompleteQuest()
 			GetQuestReward(QuestFrameRewardPanel.itemChoice)
@@ -113,7 +115,7 @@ function AcceptAvailableGossipQuests()
 		if (numQuests < 20) then
 			AcceptQuest()
 		else
-			print({msg="AcceptAvailableGossipQuests: Quest log full ", debug=debug_enabled})
+			print({msg="Quest log full", debug=true})
 		end
 	end
 end
@@ -139,7 +141,7 @@ function AcceptAvailableQuests()
 		if (numQuests < 20) then
 			SelectAvailableQuest(i)
 		else
-			print({msg="AcceptAvailableQuests: Quest log full ", debug=debug_enabled})
+			print({msg="Quest log full", debug=true})
 		end
 	end
 end
@@ -228,17 +230,17 @@ frame:SetScript("OnEvent", eventHandler)
 SLASH_QM1 = "/qm"
 SLASH_QM2 = "/questomatic"
 SlashCmdList["QM"] = function(msg)
-	if (msg == "-h" or "--help") then
+	if (msg == "-h" or msg == "--help") then
 		print({msg="|cfffc9b14/qm (-h, --help | -d, --debug)|r", debug=true})
 		print({msg="|cfffc9b14/qm  Toggle Questomatic on/off|r", debug=true})
 		print({msg="|cfffc9b14/qm -h, --help  Prints Questomatic CLI overview.|r", debug=true})
 		print({msg="|cfffc9b14/qm -d, --debug  Turn debug printing on/off|r", debug=true})
-	elseif (msg == "-d" or "--debug") then
+	elseif (msg == "-d" or msg == "--debug") then
 		debug_enabled = not debug_enabled
 		if (debug_enabled) then
 			print({msg="|cfffc9b14Questomatic: Debug enabled|r", debug=true})
 		else
-			print({msg="|cfffc9b14Questomatic: -d Debug disabled|r", debug=true})
+			print({msg="|cfffc9b14Questomatic: Debug disabled|r", debug=true})
 		end
 	else
 		if (events_on) then
