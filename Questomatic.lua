@@ -99,6 +99,7 @@ function TurnInActiveGossipQuests()
 	for i=1, numActiveGossipQuests, 1 do
 		QuestLogName, _ = gsub(GetGossipQuestName(i, GetGossipActiveQuests()), quest_level_preamble_pattern, "")
 		isTracked, isComleted = GetQuestStatus(QuestLogName)
+		print({msg="TurnInActiveGossipQuests: isTracked "..tostring(isTracked).." isCompleted "..tostring(isCompleted), debug=debug_enabled})
 		if ((isTracked and isComleted) or isComleted) then
 			SelectGossipActiveQuest(i)
 			CompleteQuest()
@@ -111,9 +112,9 @@ function AcceptAvailableGossipQuests()
 	local numAvailableGossipQuests = GetNumGossipQuests(GetGossipAvailableQuests())
 	print({msg="AcceptAvailableGossipQuests: numAvailableGossipQuests "..tostring(numAvailableGossipQuests), debug=debug_enabled})
 	for i=1, numAvailableGossipQuests, 1 do
-		SelectGossipAvailableQuest(i)
 		_, numQuests = GetNumQuestLogEntries();
 		if (numQuests < 20) then
+			SelectGossipAvailableQuest(i)
 			AcceptQuest()
 		else
 			print({msg="Quest log full", debug=true})
@@ -127,7 +128,7 @@ function TurnInActiveQuests()
 	for i=1, numActiveQuests, 1 do
 		QuestLogName, _ = gsub(GetActiveTitle(i), quest_level_preamble_pattern, "")
 		isTracked, isComleted = GetQuestStatus(QuestLogName)
-		print({msg="TurnInActiveQuests: isComleted "..tostring(isComleted), debug=debug_enabled})
+		print({msg="TurnInActiveQuests: isTracked "..tostring(isTracked).." isCompleted "..tostring(isCompleted), debug=debug_enabled})
 		if ((isTracked and isComleted) or isComleted) then
 			SelectActiveQuest(i)
 		end
@@ -184,7 +185,8 @@ local function eventHandler(...)
 		print({msg="Got "..event.." event", debug=debug_enabled})
 		QuestLogName, _ = gsub(GetTitleText(), quest_level_preamble_pattern, "")
 		isTracked, isCompleted = GetQuestStatus(QuestLogName)
-		if (isTracked and isCompleted) then
+		print({msg="isTracked "..tostring(isTracked).." isCompleted "..tostring(isCompleted), debug=debug_enabled})
+		if ((isTracked and isCompleted) or isCompleted) then -- We should have already checked this, but just to be safe.
 			CompleteQuest();
 		end
 
@@ -192,7 +194,8 @@ local function eventHandler(...)
 		print({msg="Got "..event.." event", debug=debug_enabled})
 		QuestLogName, _ = gsub(GetTitleText(), quest_level_preamble_pattern, "")
 		isTracked, _ = GetQuestStatus(QuestLogName)
-		if (isTracked) then
+		print({msg="isTracked "..tostring(isTracked), debug=debug_enabled})
+		if (isTracked) then -- isCompleted may be nil here, but it's ok. We did get the dialog after all.
 			numQuestChoices = GetNumQuestChoices()
 			print({msg="numQuestChoices "..tostring(numQuestChoices), debug=debug_enabled})
 			if (numQuestChoices == 0) then
