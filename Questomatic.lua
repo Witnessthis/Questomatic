@@ -183,10 +183,9 @@ local function eventHandler(...)
 
 	elseif	(event == "QUEST_PROGRESS") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
-		QuestLogName, _ = gsub(GetTitleText(), quest_level_preamble_pattern, "")
-		isTracked, isCompleted = GetQuestStatus(QuestLogName)
-		print({msg="isTracked "..tostring(isTracked).." isCompleted "..tostring(isCompleted), debug=debug_enabled})
-		if ((isTracked and isCompleted) or isCompleted) then -- We should have already checked this, but just to be safe.
+		completable = IsQuestCompletable()
+		print({msg="completable "..tostring(completable), debug=debug_enabled})
+		if (completable) then
 			CompleteQuest();
 		end
 
