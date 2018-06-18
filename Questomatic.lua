@@ -67,7 +67,7 @@ end
 function GetQuestStatus(questname)
 	local i = 1
 	while GetQuestLogTitle(i) do
-		local questTitle, level, questTag, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(i)
+		local questTitle, level, questTag, isHeader, isCollapsed, isComplete = GetQuestLogTitle(i)
 		if (not isHeader) then
 			print({msg="GetQuestStatus: Got:  '"..tostring(questTitle).."'  Expected: '"..tostring(questname).."'", debug=debug_enabled})
 			if(questTitle == questname) then
