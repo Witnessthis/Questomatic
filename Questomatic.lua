@@ -57,7 +57,18 @@ function print(t)
 end
 
 function dbgprint(msg)
-	DEFAULT_CHAT_FRAME:AddMessage(msg)
+	DEFAULT_CHAT_FRAME:AddMessage(tostring(msg))
+end
+
+
+-----------------------------------------------------------
+-- Debug functions
+-----------------------------------------------------------
+function wait(seconds)
+	local start = time()
+	while start + seconds > time() do
+	end
+	print({msg="done waiting for "..tostring(seconds), debug=debug_enabled})
 end
 
 
@@ -106,6 +117,7 @@ function TurnInActiveGossipQuests()
 			GetQuestReward(QuestFrameRewardPanel.itemChoice)
 		end
 	end
+	print({msg="TurnInActiveGossipQuests: returning", debug=debug_enabled})
 end
 
 function AcceptAvailableGossipQuests()
@@ -120,6 +132,7 @@ function AcceptAvailableGossipQuests()
 			print({msg="Quest log full", debug=true})
 		end
 	end
+	print({msg="AcceptAvailableGossipQuests: returning", debug=debug_enabled})
 end
 
 function TurnInActiveQuests()
@@ -133,6 +146,7 @@ function TurnInActiveQuests()
 			SelectActiveQuest(i)
 		end
 	end
+	print({msg="TurnInActiveQuests: returning", debug=debug_enabled})
 end
 
 function AcceptAvailableQuests()
@@ -146,6 +160,7 @@ function AcceptAvailableQuests()
 			print({msg="Quest log full", debug=true})
 		end
 	end
+	print({msg="AcceptAvailableQuests: returning", debug=debug_enabled})
 end
 
 
@@ -180,7 +195,7 @@ RegisterEvents(frame)
 local function eventHandler(...)
 	if (event == "PLAYER_LOGIN") then
 		print({msg="|cfffc8014Q|cfffc8414u|cfffc8814e|cfffc8b14s|cfffc9314t|cfffc9b14o|cfffc9f14m|cfffca314a|cfffcaa14t|cfffcae14i|cfffcb614c |cfffcc214l|cfffcc514o|cfffcc914a|cfffccd14d|cfffcd514e|cfffcdd14d|cfffce414.  |cfffc9b14/qm -h for help|r", debug=true})
-
+		print({msg="End "..event.." event", debug=debug_enabled})
 	elseif	(event == "QUEST_PROGRESS") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
 		completable = IsQuestCompletable()
@@ -188,7 +203,7 @@ local function eventHandler(...)
 		if (completable) then
 			CompleteQuest();
 		end
-
+		print({msg="End "..event.." event", debug=debug_enabled})
 	elseif	(event == "QUEST_COMPLETE") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
 		QuestLogName, _ = gsub(GetTitleText(), quest_level_preamble_pattern, "")
@@ -201,13 +216,13 @@ local function eventHandler(...)
 				GetQuestReward()
 			end
 		end
-
+		print({msg="End "..event.." event", debug=debug_enabled})
 	elseif	(event == "GOSSIP_SHOW") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
 
 		TurnInActiveGossipQuests()
 		AcceptAvailableGossipQuests()
-
+		print({msg="End "..event.." event", debug=debug_enabled})
 	elseif	(event == "QUEST_DETAIL") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
 		_, numQuests = GetNumQuestLogEntries();
@@ -216,11 +231,12 @@ local function eventHandler(...)
 		else
 			print({msg="eventHandler: Quest log full ", debug=debug_enabled})
 		end
-
+		print({msg="End "..event.." event", debug=debug_enabled})
 	elseif	(event == "QUEST_GREETING") then
 		print({msg="Got "..event.." event", debug=debug_enabled})
 		TurnInActiveQuests(numActiveQuests)
 		AcceptAvailableQuests(numAvailableQuests)
+		print({msg="End "..event.." event", debug=debug_enabled})
 	end
 end
 
