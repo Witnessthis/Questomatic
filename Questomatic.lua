@@ -48,10 +48,11 @@ end
 function qm_ns.GetQuestStatus(questname)
 	local i = 1
 	while GetQuestLogTitle(i) do
-		local questTitle, level, questTag, isHeader, isCollapsed, isComplete = GetQuestLogTitle(i)
+                local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(i)
 		if (not isHeader) then
-			qm_ns:write({msg="GetQuestStatus: Got:  '"..tostring(questTitle).."'  Expected: '"..tostring(questname).."'", debug=debug_enabled})
-			if(questTitle == questname) then
+			qm_ns:write({msg="GetQuestStatus: Got:  '"..tostring(title).."'  Expected: '"..tostring(questname).."'", debug=debug_enabled})
+			if(title == questname) then
+                                isComplete = IsQuestComplete(questID)
 				return true, isComplete
 			end
 		end
@@ -92,6 +93,7 @@ function qm_ns.AcceptAvailableGossipQuests()
 		        if (numQuests < 20) then
 		        	SelectGossipAvailableQuest(i)
 		        else
+                                DeclineQuest()
 		        	qm_ns:write({msg="|cfffc9b14Quest log full|r", debug=true})
 		        end
                 end
@@ -188,6 +190,7 @@ function qm_ns.eventHandler(self, event, ...)
 		if (numQuests < 20) then
 			AcceptQuest()
 		else
+                        --DeclineQuest()
 			qm_ns:write({msg="|cfffc9b14Quest log full|r", debug=true})
 		end
 		qm_ns:write({msg="End "..event.." event", debug=debug_enabled})
