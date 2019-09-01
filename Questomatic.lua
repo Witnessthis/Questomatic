@@ -92,7 +92,7 @@ function qm_ns.AcceptAvailableGossipQuests()
 		        if (numQuests < 20) then
 		        	SelectGossipAvailableQuest(i)
 		        else
-		        	qm_ns:write({msg="Quest log full", debug=true})
+		        	qm_ns:write({msg="|cfffc9b14Quest log full|r", debug=true})
 		        end
                 end
 	end
@@ -188,7 +188,7 @@ function qm_ns.eventHandler(self, event, ...)
 		if (numQuests < 20) then
 			AcceptQuest()
 		else
-			qm_ns:write({msg="eventHandler: Quest log full ", debug=debug_enabled})
+			qm_ns:write({msg="|cfffc9b14Quest log full|r", debug=true})
 		end
 		qm_ns:write({msg="End "..event.." event", debug=debug_enabled})
 	elseif	(event == "QUEST_GREETING") then
