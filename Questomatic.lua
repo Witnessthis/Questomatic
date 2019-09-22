@@ -37,10 +37,6 @@ function qm_ns:write(t)
 	end
 end
 
-function dbgprint(msg)
-        print(tostring(msg))
-end
-
 
 -----------------------------------------------------------
 -- Quest info functions
@@ -190,7 +186,6 @@ function qm_ns.eventHandler(self, event, ...)
 		if (numQuests < 20) then
 			AcceptQuest()
 		else
-                        --DeclineQuest()
 			qm_ns:write({msg="|cfffc9b14Quest log full|r", debug=true})
 		end
 		qm_ns:write({msg="End "..event.." event", debug=debug_enabled})
