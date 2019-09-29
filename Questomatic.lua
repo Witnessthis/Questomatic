@@ -209,6 +209,7 @@ SLASH_QM2 = "/questomatic"
 SlashCmdList["QM"] = function(msg)
     if (msg == "-h" or msg == "--help") then
         qm_ns:write({msg="|cfffc9b14/qm (-h, --help | -d, --debug)|r", debug=true})
+        qm_ns:write({msg="|cfffc9b14Hold shift when talking to a questgiver to disable Questomatic.|r", debug=true})
         qm_ns:write({msg="|cfffc9b14/qm  Toggle Questomatic on/off|r", debug=true})
         qm_ns:write({msg="|cfffc9b14/qm -h, --help  Prints Questomatic CLI overview.|r", debug=true})
         qm_ns:write({msg="|cfffc9b14/qm -d, --debug  Turn debug writeing on/off|r", debug=true})
