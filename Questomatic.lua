@@ -86,7 +86,7 @@ function qm_ns.AcceptAvailableGossipQuests()
         local isRepeatable = quests[(i-1)*7+5] -- select every 5th out of 7 arguments, isRepeatable.
         if not isRepeatable then
             _, numQuests = GetNumQuestLogEntries();
-            if (numQuests < 20) then
+            if (numQuests < 25) then
                 SelectGossipAvailableQuest(i)
             else
                 DeclineQuest()
@@ -184,7 +184,7 @@ function qm_ns.eventHandler(self, event, ...)
         elseif (event == "QUEST_DETAIL") then
             qm_ns:write({msg="Got "..event.." event", debug=debug_enabled})
             _, numQuests = GetNumQuestLogEntries();
-            if (numQuests < 20) then
+            if (numQuests < 25) then
                 AcceptQuest()
             else
                 qm_ns:write({msg="|cfffc9b14Quest log full|r", debug=true})
